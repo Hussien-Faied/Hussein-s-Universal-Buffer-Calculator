@@ -11,9 +11,20 @@
         body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
         .container { max-width: 750px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         h1 { color: #003366; text-align: center; font-size: 28px; }
-        .info-text { font-size: 11px; text-align: center; color: #444444; margin-top: -10px; }
-        .info-text em { }
-        .contact-text { font-size: 11px; text-align: center; color: #444444; margin-top: 2px; margin-bottom: 10px;}
+        .info-text { 
+            font-size: 14px; /* Increased from 11px */
+            text-align: center; 
+            color: #444444; 
+            margin-top: -10px; 
+        }
+        /* Removed em from .info-text em {} as em tag is removed from HTML */
+        .contact-text { 
+            font-size: 14px; /* Increased from 11px to match info-text */
+            text-align: center; 
+            color: #444444; 
+            margin-top: 2px; 
+            margin-bottom: 10px;
+        }
         hr { margin-top: 15px; margin-bottom: 15px; }
         
         .input-group { margin-bottom: 15px; }
@@ -32,11 +43,9 @@
         .input-row label { width: 220px; margin-right: 10px; white-space: nowrap;}
         .input-row input { flex-grow: 1; }
 
-
         .dynamic-input-row { display: flex; align-items: center; margin-left: 20px; margin-bottom: 3px; }
         .dynamic-input-row label { width: 150px; font-size: 0.9em; }
         .dynamic-input-row input { width: 80px; font-size: 0.9em; margin-right: 10px; }
-
 
         button {
             background-color: #28a745; color: white; padding: 10px 15px; border: none;
@@ -59,7 +68,7 @@
 <body>
     <div class="container">
         <h1>Buffer-It!</h1>
-        <p class="info-text"><em>This calculator allows you to find the molar concentration of acids/bases required to produce a buffer with a desired pH.</em></p>
+        <p class="info-text">This calculator allows you to find the molar concentration of acids/bases required to produce a buffer with a desired pH.</p>
         <p class="contact-text">Made by: Hussein Fayed Ibrahim. Contact: hussienamer199@gmail.com</p>
         <hr>
 
@@ -310,7 +319,7 @@
                             "Nh_average_protons": Nh_average_protons}
                 else: return {"error": "Cannot achieve target protonation state with identical stock proton counts if Nh is different."}
             denominator_mA = (num_protons_stock_acid - num_protons_stock_base)
-            if denominator_mA == 0: return {"error": "Stock acid and stock base have same number of protons, cannot determine unique ratio."}
+            if denominator_mA == 0: return {"error": "Stock acid and stock base have same number of protons, cannot determine unique ratio."} # Should be caught by above
             conc_stock_acid = C_total_all_forms * (Nh_average_protons - num_protons_stock_base) / denominator_mA
             conc_stock_base = C_total_all_forms - conc_stock_acid
             if conc_stock_acid < -CONSTANTS["CONVERGENCE_TOLERANCE"] or conc_stock_base < -CONSTANTS["CONVERGENCE_TOLERANCE"]:
@@ -339,17 +348,16 @@
                         return str(default_if_empty)
                     else: 
                         if data_type == float or data_type == int:
-                             raise ValueError(f"Numeric input for '{element_id}' cannot be empty.")
+                                raise ValueError(f"Numeric input for '{element_id}' cannot be empty.")
                         return "" 
 
                 if data_type == float: return float(val_str)
                 if data_type == int: return int(val_str)
                 return val_str 
             except ValueError as ve: 
-                 raise ValueError(f"Invalid value for '{element_id}': '{val_str}'. Expected {data_type.__name__}. Error: {ve}")
+                raise ValueError(f"Invalid value for '{element_id}': '{val_str}'. Expected {data_type.__name__}. Error: {ve}")
             except Exception as e: 
                 raise ValueError(f"Error getting value for '{element_id}'. Error: {e}")
-
 
         def get_el_checked(element_id):
             el = document.getElementById(element_id)
@@ -358,10 +366,9 @@
         def set_results_html(html_content):
             results_output_el = document.getElementById("results_output")
             if results_output_el:
-                 results_output_el.innerHTML = html_content
+                results_output_el.innerHTML = html_content
             else:
                 print(f"DEBUG: PyScript could not find HTML element with ID 'results_output' to display: {html_content}")
-
 
         def on_method_change(event=None): 
             selected_method = get_el_value("method_select")
@@ -424,7 +431,6 @@
                 """
                 container.innerHTML += row_html
 
-
         def run_calculation_proxy(event): 
             try:
                 run_calculation() 
@@ -434,11 +440,10 @@
                 traceback_text = traceback.format_exc().replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
                 # Using triple-quoted f-string for robustness with internal single quotes for style
                 error_html = f"""<p style='color:red'>
-                                   <strong>An unexpected Python error occurred (proxy):</strong><br>{error_message_text}<br>
-                                 </p>
-                                 <pre>{traceback_text}</pre>"""
+                                    <strong>An unexpected Python error occurred (proxy):</strong><br>{error_message_text}<br>
+                                </p>
+                                <pre>{traceback_text}</pre>"""
                 set_results_html(error_html)
-
 
         def run_calculation():
             set_results_html("Calculating...") 
@@ -521,7 +526,7 @@
                     for i in range(num_pkas):
                         pka_values.append(get_el_value(f"poly_pka_val_{i}", float))
                     
-                    num_pkas_for_naming = len(pka_values)
+                    num_pkas_for_naming = len(pka_values) # Use the actual number of pKas obtained
                     output_str += f"pKa Values: {pka_values}<br>"
                     results_data = calculate_polyprotic_mixing_recipe_approx(target_ph, c_total, pka_values, stock_acid_name, stock_base_name)
 
@@ -539,28 +544,32 @@
                         output_str += f"Avg. Protons (Nh): {nh_avg_str}<br>"
                         output_str += "Approx. Equilibrium Species:<br>"
                         
+                        # Determine base name for species (e.g., "Cit" from "H3Cit")
                         base_name_g = stock_acid_name.replace("Acid", "").replace(f"H{num_pkas_for_naming}", "").strip()
-                        if not base_name_g or len(base_name_g) > 10 : base_name_g = "A"
+                        if not base_name_g or len(base_name_g) > 10 : base_name_g = "A" # Default generic name
                         
                         for p_val, c_spec in results_data.get('species_concentrations_at_pH', []):
-                            p_int = int(p_val)
+                            p_int = int(p_val) # Number of protons on the species
                             chg_str = ""
-                            if num_pkas_for_naming > 0:
-                                assumed_chg_full_prot = 0
+                            if num_pkas_for_naming > 0: # Assuming H_n A starts neutral
+                                assumed_chg_full_prot = 0 
                                 chg_val = assumed_chg_full_prot - (num_pkas_for_naming - p_int)
                                 if chg_val < 0: chg_str = str(chg_val)
                                 elif chg_val > 0: chg_str = "+" + str(chg_val)
+                                # else charge is 0, chg_str remains ""
+                            
                             s_name = f"H{p_int}{base_name_g}{chg_str}" if p_int > 0 else f"{base_name_g}{chg_str}"
-                            if p_int == 1 and not base_name_g.startswith("H"): s_name = f"H{base_name_g}{chg_str}"
-                            elif p_int == 0: s_name = f"{base_name_g}{chg_str}"
-                            output_str += f"&nbsp;&nbsp;Species H{p_int}A-form (e.g. {s_name}): {c_spec:.6f} M<br>"
+                            if p_int == 1 and not base_name_g.startswith("H"): s_name = f"H{base_name_g}{chg_str}" # e.g. HA instead of H1A if A doesn't imply H
+                            elif p_int == 0 : s_name = f"{base_name_g}{chg_str}" # e.g. A-
+                            output_str += f"&nbsp;&nbsp;Species (H<sub>{p_int}</sub>-form e.g. {s_name}): {c_spec:.6f} M<br>"
+
 
                 if results_data and results_data.get("error"):
                     error_text = str(results_data['error']).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
                     # Using triple-quoted f-string and single quotes for style attribute
                     output_str += f"""<br><strong style='color:red;'>
-                                        Error/Warning: {error_text}
-                                    </strong><br>"""
+                                    Error/Warning: {error_text}
+                                </strong><br>"""
                 
                 set_results_html(output_str)
 
@@ -568,8 +577,8 @@
                 error_message_text = str(ve).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
                 # Using triple-quoted f-string and single quotes for style attribute
                 error_html = f"""<strong style='color:red;'>
-                                   Input Error: {error_message_text}
-                                 </strong>"""
+                                    Input Error: {error_message_text}
+                                </strong>"""
                 set_results_html(error_html)
             except Exception as e: 
                 import traceback 
@@ -577,9 +586,9 @@
                 traceback_text = traceback.format_exc().replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
                 # Using triple-quoted f-string and single quotes for style attribute
                 error_html = f"""<p style='color:red'>
-                                   <strong>Calculation Error:</strong><br>{error_message_text}<br>
-                                 </p>
-                                 <pre>{traceback_text}</pre>"""
+                                    <strong>Calculation Error:</strong><br>{error_message_text}<br>
+                                </p>
+                                <pre>{traceback_text}</pre>"""
                 set_results_html(error_html)
         
         # --- Initial Setup Calls after DOM is ready ---
@@ -599,6 +608,10 @@
         if base_num_counter_ions_el:
             mock_event_base_salt = type('Event', (object,), {'target': base_num_counter_ions_el})
             update_salt_ion_fields(mock_event_base_salt)
+
+    </py-script>
+</body>
+</html>
 
     </py-script>
 </body>
